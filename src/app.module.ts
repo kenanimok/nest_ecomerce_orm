@@ -1,16 +1,21 @@
 import { Module } from '@nestjs/common';
-import { CustomConfigModule } from './config/config.module';
-import { DatabaseModule } from './config/database.module';
-// import { CustomConfigModule } from './config.module';
-// import { DatabaseModule } from './database.module';
-import { UsersModule } from './users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductsModule } from './products/products.module';
+import { Product } from './products/entities/product.entity';
 
 @Module({
   imports: [
-    CustomConfigModule,
-    DatabaseModule,
-    UsersModule,
-    // Other modules and components
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: '1234',
+      database: 'db_school',
+      entities: [Product],
+      synchronize: true,
+    }),
+    ProductsModule,
   ],
 })
 export class AppModule {}

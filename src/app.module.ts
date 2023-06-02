@@ -6,24 +6,6 @@ import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 
-// @Module({
-//   imports: [
-//     TypeOrmModule.forRoot({
-//       type: 'mysql',
-//       host: 'localhost',
-//       port: 3306,
-//       username: 'root',
-//       password: '1234',
-//       database: 'db_school',
-//       autoLoadEntities: true,
-
-//       synchronize: true,
-//     }),
-//     ProductsModule,
-//   ],
-// })
-// export class AppModule {}
-
 @Module({
   imports: [
     ConfigModule.forRoot(), // Load environment variables
@@ -40,7 +22,9 @@ import { CategoryModule } from './category/category.module';
         synchronize: true, // Auto-create database tables (use carefully in production)
       }),
       inject: [ConfigService],
-    }), AuthModule, CategoryModule,
+    }),
+    AuthModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}

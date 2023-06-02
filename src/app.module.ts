@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PostModule } from './post/post.module';
+import { AuthModule } from './auth/auth.module';
+import { CategoryModule } from './category/category.module';
 
 // @Module({
 //   imports: [
@@ -25,7 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot(), // Load environment variables
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, ProductsModule],
+      imports: [ConfigModule, ProductsModule, PostModule],
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get('DB_HOST'),
@@ -37,7 +40,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: true, // Auto-create database tables (use carefully in production)
       }),
       inject: [ConfigService],
-    }),
+    }), AuthModule, CategoryModule,
   ],
 })
 export class AppModule {}

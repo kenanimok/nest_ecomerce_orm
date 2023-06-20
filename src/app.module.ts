@@ -1,31 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductsModule } from './products/products.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-// @Module({
-//   imports: [
-//     TypeOrmModule.forRoot({
-//       type: 'mysql',
-//       host: 'localhost',
-//       port: 3306,
-//       username: 'root',
-//       password: '1234',
-//       database: 'db_school',
-//       autoLoadEntities: true,
-
-//       synchronize: true,
-//     }),
-//     ProductsModule,
-//   ],
-// })
-// export class AppModule {}
+import { UserModule } from './user/user.module';
+import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
+import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), // Load environment variables
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, ProductsModule],
+      imports: [ConfigModule, UserModule, CategoryModule, ProductModule],
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get('DB_HOST'),
@@ -38,6 +24,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    CartModule,
+    OrderModule,
   ],
 })
 export class AppModule {}

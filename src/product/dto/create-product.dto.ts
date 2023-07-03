@@ -7,4 +7,6 @@ export class ProductDto {
   price: number;
   @ApiProperty()
   categoryId: number;
+  @ApiProperty()
+  quantity: number;
 }

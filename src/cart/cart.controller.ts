@@ -1,48 +1,70 @@
-// cart.controller.ts
 import {
   Controller,
-  Get,
   Post,
-  Put,
-  Delete,
   Body,
   Param,
+  Put,
+  Delete,
+  Get,
+  NotFoundException,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CartDto } from './dto/create-cart.dto';
-import { Cart } from './entities/cart.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { Cart } from './entities/cart.entity';
 
-@ApiTags('carts')
-@Controller('carts')
+@ApiTags('cart')
+@Controller('cart')
 export class CartController {
-  constructor(private cartService: CartService) {}
+  constructor(private readonly cartService: CartService) {}
 
   @Post()
-  async createCart(@Body() cartDto: CartDto): Promise<Cart> {
-    return this.cartService.createCart(cartDto);
+  async addToCart(@Body() cartDto: CartDto) {
+    try {
+      const { userId, productId, quantity } = cartDto;
+      const cart = await this.cartService.addToCart(
+        userId,
+        productId,
+        quantity,
+      );
+      return { message: 'Product added to cart successfully', cart };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
-  @Get()
-  async getAllCarts(): Promise<Cart[]> {
-    return this.cartService.getAllCarts();
+  @Put(':cartId/update')
+  async updateCart(@Param('cartId') cartId: number, @Body() cartDto: CartDto) {
+    try {
+      const cart = await this.cartService.updateCart(cartId, cartDto.quantity);
+      return { message: 'Cart updated successfully', cart };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
-  @Get(':id')
-  async getCartById(@Param('id') cartId: number): Promise<Cart> {
-    return this.cartService.getCartById(cartId);
+  @Delete(':cartId/remove')
+  async removeCartItem(@Param('cartId') cartId: number) {
+    try {
+      await this.cartService.removeCartItem(cartId);
+      return { message: 'Cart item removed successfully' };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
-  @Put(':id')
-  async updateCart(
-    @Param('id') cartId: number,
-    @Body() cartDto: CartDto,
-  ): Promise<Cart> {
-    return this.cartService.updateCart(cartId, cartDto);
+  @Get(':userId')
+  async getUserCart(@Param('userId') userId: number) {
+    try {
+      const cart = await this.cartService.getUserCart(userId);
+      return { cart };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
-  @Delete(':id')
-  async deleteCart(@Param('id') cartId: number): Promise<void> {
-    return this.cartService.deleteCart(cartId);
+  @Get('/all')
+  async getAllcart(): Promise<Cart[]> {
+    return this.cartService.getAllcart();
   }
 }

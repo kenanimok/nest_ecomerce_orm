@@ -63,8 +63,8 @@ export class CartController {
     }
   }
 
-  @Get('/all')
-  async getAllcart(): Promise<Cart[]> {
-    return this.cartService.getAllcart();
+  @Get()
+  async getAllCarts(): Promise<Cart[]> {
+    return this.cartService.getAllCarts();
   }
 }

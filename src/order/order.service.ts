@@ -1,21 +1,45 @@
-// // order.service.ts
 // import { Injectable } from '@nestjs/common';
 // import { InjectRepository } from '@nestjs/typeorm';
 // import { Repository } from 'typeorm';
 // import { OrderDto } from './dto/create-order.dto';
 // import { Order } from './entities/order.entity';
 // import { Cart } from 'src/cart/entities/cart.entity';
+// import { Product } from 'src/product/entities/product.entity';
 
 // @Injectable()
 // export class OrderService {
 //   constructor(
 //     @InjectRepository(Order)
 //     private orderRepository: Repository<Order>,
+//     @InjectRepository(Product)
+//     private productRepository: Repository<Product>,
+
+//     @InjectRepository(Cart)
+//     private cartRepository: Repository<Cart>,
 //   ) {}
 
 //   async createOrder(orderDto: OrderDto): Promise<Order> {
 //     const order = this.orderRepository.create(orderDto);
-//     return this.orderRepository.save(order);
+//     const savedOrder = await this.orderRepository.save(order);
+
+//     // Update product quantities
+//     const cartItems = await this.cartRepository.find({
+//       where: { user: savedOrder.user },
+//       relations: ['product'],
+//     });
+
+//     console.log('cartItems==>', cartItems);
+
+//     for (const cartItem of cartItems) {
+//       const product = cartItem.product;
+//       const quantityInCart = cartItem.quantity;
+//       if (product.quantity >= quantityInCart) {
+//         product.quantity -= quantityInCart;
+//         await this.productRepository.save(product);
+//       }
+//     }
+
+//     return savedOrder;
 //   }
 
 //   async getAllOrders(): Promise<Order[]> {
@@ -36,7 +60,6 @@
 //   }
 // }
 
-// order.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -67,8 +90,6 @@ export class OrderService {
       relations: ['product'],
     });
 
-    console.log('cartItems==>', cartItems);
-
     for (const cartItem of cartItems) {
       const product = cartItem.product;
       const quantityInCart = cartItem.quantity;
@@ -77,6 +98,9 @@ export class OrderService {
         await this.productRepository.save(product);
       }
     }
+
+    // Delete cart items for the user
+    await this.cartRepository.remove(cartItems);
 
     return savedOrder;
   }

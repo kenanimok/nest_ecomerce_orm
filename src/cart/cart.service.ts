@@ -80,7 +80,8 @@ export class CartService {
   private async getUserById(userId: number): Promise<User> {
     return this.userRepository.findOne({ where: { id: userId } });
   }
-  async getAllcart(): Promise<Cart[]> {
+
+  async getAllCarts(): Promise<Cart[]> {
     return this.cartRepository.find();
   }
 }

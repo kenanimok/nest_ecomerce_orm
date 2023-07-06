@@ -7,11 +7,14 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { UserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SignInDto } from './dto/sigin.dto';
 
 // user.controller.ts
 @ApiTags('users')
@@ -50,5 +53,21 @@ export class UserController {
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) userId: number): Promise<void> {
     return this.userService.deleteUser(userId);
+  }
+
+  @Post('/sigup')
+  async Sigups(@Body() userDto: UserDto): Promise<User> {
+    return this.userService.signUp(userDto);
+  }
+
+  @Post('/signin')
+  async signIn(@Body() signInDto: SignInDto): Promise<User> {
+    try {
+      const { username, password } = signInDto;
+      const user = await this.userService.signIn(username, password);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+    }
   }
 }

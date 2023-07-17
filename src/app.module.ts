@@ -4,15 +4,21 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
-import { CartModule } from './cart/cart.module';
-import { OrderModule } from './order/order.module';
 import { AuthModule } from './auth/auth.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), // Load environment variables
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, UserModule, CategoryModule, ProductModule],
+      imports: [
+        ConfigModule,
+        // UserModule,
+        CategoryModule,
+        ProductModule,
+        // AuthModule,
+        CartModule,
+      ],
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get('DB_HOST'),
@@ -25,9 +31,6 @@ import { AuthModule } from './auth/auth.module';
       }),
       inject: [ConfigService],
     }),
-    CartModule,
-    OrderModule,
-    AuthModule,
   ],
 })
 export class AppModule {}

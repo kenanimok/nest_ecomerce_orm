@@ -1,77 +1,47 @@
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SignUpDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { UserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from './entities/user.entity';
+import { UserRepository } from './user.repository';
 
-// user.service.ts
+// import { UserRepository } from './user.repository';
+//// private userRepository: UserRepository,
+
+// private userRepository: Repository<User>,
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: UserRepository,
   ) {}
 
-  async createUser(userDto: UserDto): Promise<User> {
-    const user = this.userRepository.create(userDto);
-    return this.userRepository.save(user);
-  }
-
-  async getUsers(): Promise<User[]> {
-    return this.userRepository.find();
-  }
-
-  async getUserById(userId: number): Promise<User> {
-    return this.userRepository.findOne({ where: { id: userId } });
-  }
-
-  async updateUser(userId: number, userDto: UserDto): Promise<User> {
-    await this.userRepository.update(userId, userDto);
-    return this.getUserById(userId);
-  }
-
-  async deleteUser(userId: number): Promise<void> {
-    await this.userRepository.delete(userId);
-  }
-
-  async signUp(userDto: UserDto): Promise<User> {
+  async signUp(signupUpDto: SignUpDto): Promise<User> {
+    console.log('signupUpDto==>', signupUpDto);
     try {
-      const { username, password, email, address } = userDto;
+      const { username, password } = signupUpDto;
 
       const hashedPassword = await bcrypt.hashSync(password, 10);
 
       const user = this.userRepository.create({
         username,
         password: hashedPassword,
-        email,
-        address,
       });
 
+      console.log('user===>', user);
       return await this.userRepository.save(user);
     } catch (e) {
+      console.log('eeeeeee', e);
       throw new ConflictException({
         message: ['Username has been already using.'],
       });
     }
   }
 
-  async signIn(username: string, password: string): Promise<User> {
+  async findOneUser(username: string): Promise<User | undefined> {
     const user = await this.userRepository.findOne({ where: { username } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      throw new NotFoundException('Invalid password');
-    }
-
     return user;
   }
 }

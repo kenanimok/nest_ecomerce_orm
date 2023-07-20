@@ -1,29 +1,30 @@
-// user.entity.ts
-
-import { Cart } from 'src/cart/entities/cart.entity';
-import { Order } from 'src/order/entities/order.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+// import { Task } from "src/task/task.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
-
-  @Column()
-  email: string;
 
   @Column()
   password: string;
 
-  @Column()
-  address: string;
+  //   @CreateDateColumn()
+  //   created: Date;
 
-  @OneToMany(() => Cart, (cart) => cart.user)
-  carts?: Cart[];
+  //   @UpdateDateColumn()
+  //   updated: Date;
 
-  @OneToMany(() => Order, (order) => order.user)
-  orders: Order[];
+  // @OneToMany(type => Task, tasks => tasks.user)
+  // tasks: Task[]
 }

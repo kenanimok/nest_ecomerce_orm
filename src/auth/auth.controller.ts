@@ -1,22 +1,30 @@
-// import { Controller } from '@nestjs/common';
-
-// @Controller('auth')
-// export class AuthController {}
-
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+  Body,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local/local-auth.guards';
-// import { JwtAuthGuard } from './jwt/jwt-auth.guards';
+import { SignUpDto } from 'src/user/dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // ke test
+  //   @UseGuards(LocalAuthGuard)
+  //   @Post('signin')
+  //   async signIn(@Body() signUpDto: SignUpDto): Promise<any> {
+  //     return signUpDto;
+  //   }
+
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  async signIn(@Request() req: any): Promise<any> {
-    return req.user;
-    // return this.authService.signIn(req.user);
+  async signIn(@Body() signUpDto: SignUpDto): Promise<any> {
+    return this.authService.signIn(signUpDto);
   }
 
   // @UseGuards(JwtAuthGuard)

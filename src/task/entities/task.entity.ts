@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 @Entity({ name: 'tasks' })
 export class Task {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column()

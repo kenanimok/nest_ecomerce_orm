@@ -8,13 +8,16 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guards';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Task } from './entities/task.entity';
+import { SearchTasksDto } from './dto/search-tasks.dto';
+
 @ApiTags('Task') // Add this tag to group the endpoints in Swagger under 'Task'
 @Controller('task')
 export class TaskController {
@@ -25,11 +28,23 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // @Get()
+  // getAllTasks() {
+  //   return this.taskService.findAll();
+  // }
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    description: 'search',
+    required: false,
+  })
   @Get()
-  getTasks() {
-    return this.taskService.findAll();
+  getTasks(@Query() searchTasksDto: SearchTasksDto) {
+    return this.taskService.getListTask(searchTasksDto);
   }
 
   @Get(':id')

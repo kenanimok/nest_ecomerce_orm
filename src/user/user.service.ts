@@ -8,14 +8,17 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UserRepository } from './user.repository';
 
 // user.service.ts
+
+// private userRepository: Repository<User>,
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: UserRepository,
   ) {}
 
   async createUser(userDto: UserDto): Promise<User> {
@@ -61,17 +64,22 @@ export class UserService {
     }
   }
 
-  async signIn(username: string, password: string): Promise<User> {
+  // async signIn(username: string, password: string): Promise<User> {
+  //   const user = await this.userRepository.findOne({ where: { username } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+
+  //   const passwordMatch = await bcrypt.compare(password, user.password);
+  //   if (!passwordMatch) {
+  //     throw new NotFoundException('Invalid password');
+  //   }
+
+  //   return user;
+  // }
+
+  async findOneUser(username: string): Promise<User | undefined> {
     const user = await this.userRepository.findOne({ where: { username } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      throw new NotFoundException('Invalid password');
-    }
-
     return user;
   }
 }

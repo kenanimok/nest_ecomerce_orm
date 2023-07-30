@@ -7,11 +7,13 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from './dto/create-product.dto';
 import { Product } from './entities/product.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guards';
 
 @ApiTags('products')
 @Controller('products')
@@ -24,6 +26,8 @@ export class ProductController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getProducts(): Promise<Product[]> {
     return this.productService.getProducts();
   }
